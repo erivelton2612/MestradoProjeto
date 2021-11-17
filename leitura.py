@@ -45,7 +45,6 @@ def leitura(argv, d):
 		d.S_j[int(e[0]) -1 , int(e[1])-1] = float(e[2]) 
 		
 		
-# 	print(*d.S_j, sep = ", ")
 
 	arqv.close()
 # 	#DEM------------------------------------------------------------
@@ -58,7 +57,7 @@ def leitura(argv, d):
 	d.d_jt = dok_matrix((d.J, d.T),dtype=np.float64)
 	for l in range(lines):
 		e = arqv.readline().split()
-		d.d_jt[int(e[0]) -1, int(e[1]) -1] = float(e[2])
+		d.d_jt[int(e[1]) -1, int(e[0]) -1] = float(e[2])
 		
 	for i in range(d.J):
 		e = arqv.readline().split()

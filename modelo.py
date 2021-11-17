@@ -163,17 +163,10 @@ def printsolution(argv,model,d,v):
 	for j in range(d.J):
 		for t in range(d.T):
 			for k in range(d.M):
-				a = sum(d.S_j[x][2]*v.Q_jtk[i,t,k].X 
-					for i in range(d.J)
-					for x in range(len(d.S_j)) 
-					if type(d.S_j[x][2]) == float and d.S_j[x][0]==j and d.S_j[x][1]==i) 
+				a = sum(d.S_j[j,i]*v.Q_jtk[i,t,k].X  * v.Q_jt[i,t].X for i in range(d.J) if type(d.S_j[j,i]) == float)
 				solt.write(str(j+1)+"\t"+str(t+1)+"\t"+str(k+1)+"\t"+str(round(v.Q_jtk[j,t,k].X))+"\t"+
-					   str(round(v.I_jt[j,t+1].X))+"\t"+
-                  str(round(
-					  sum(d.d_jt[x][2] for x in range(len(d.d_jt)) 
-						 if(d.d_jt[x][0] == t+1 and d.d_jt[x][1] == j+1))
-					  ))+"\t"+str((a))+"\n")
-# 				solt.write("\n")
+					   str(round(v.I_jt[j,t+1].X))+"\t"+str(round(d.d_jt[j,t]))+"\t"+str(round(a))+"\n")
+		solt.write("\n")
 
 	solt.close()
 
