@@ -19,7 +19,7 @@ class Par:
 	b_jk = []		#DAT - tempo de producao do produto/maquina
 	s_jk = []		#SET - tempo de setup do produto/maquina
 	cap_kt = []		#CAP - capacidade das maquinas por periodo
-	K_m = []		#DAT - conjunto de maquinas que processa o produto
+# 	K_m = []		#DAT - conjunto de maquinas que processa o produto
 
 	#PRECEDENCIA
 	S_j = []		#DAT - conjunto de listas de precedencia de produtos
@@ -43,7 +43,7 @@ class Par:
 		d.b_jk.clear()	
 		d.s_jk.clear()	
 		d.cap_kt.clear()	
-		d.K_m.clear()	
+# 		d.K_m.clear()	
 		d.S_j.clear()	
 		d.d_jt.clear()	
 		#d.stk_j.clear()	

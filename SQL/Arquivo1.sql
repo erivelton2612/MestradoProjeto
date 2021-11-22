@@ -19,7 +19,7 @@ from dbo.nroitens t0
 
 union all
 
-select count(*) --'#recursos'
+select count(*) +1--'#recursos'
 from dbo.nroRecursos t0
 
 union all
@@ -37,7 +37,7 @@ select @periodos --'#periodos'--8 horas por dia 22 dias por semana
 
 --select Iditem '--Iditem',
 --	isnull((select top 1 a0.ID from OPEstruturaId a0 where a0.Pai = t0.IDItem and a0.tipo = 290),0) as 'number of ressource that produces the item',
---	'1' 'holding costs', 
+--	'1' 'holding costs',	
 --	isnull((select sum(a0.QTD) from OPEstruturaId a0 where a0.Pai = t0.IDItem and a0.tipo = 290),1) as 'production time per unit'
 --	--into ##tmp
 --from dbo.nroItens t0
@@ -45,7 +45,7 @@ select @periodos --'#periodos'--8 horas por dia 22 dias por semana
 select count(*)
 from dbo.nroItens t0 left join OPEstruturaId t1 on t0.IDItem=t1.Pai and t1.tipo = 290
 
-select t0.IDItem, isnull(t1.ID,@recursoPadrao) 'Recurso', isnull(t1.qtd,1) 'qtd','0.1' 'tempo de setup','1' 'custo de setup'
+select t0.IDItem, isnull(t1.ID,@recursoPadrao) 'Recurso', isnull(t1.qtd,1) 'qtd','0.01' 'tempo de setup','0.01' 'custo de setup'
 from dbo.nroItens t0 left join OPEstruturaId t1 on t0.IDItem=t1.Pai and t1.tipo = 290
 
 
@@ -70,6 +70,6 @@ select count(*) from OPEstruturaId t0 where t0.tipo = 4
 --#10 units of component needed to produce one unit of parent
 --#11 lead time
 
-select t0.id'--id', t0.pai, replace(t0.qtd,',','.') qtd, '1' 'Lead-time' from OPEstruturaId t0
+select t0.id'--id', t0.pai, replace(t0.qtd,',','.') qtd, '0.01' 'Lead-time' from OPEstruturaId t0
 where t0.id is not null
 order by t0.id

@@ -5,6 +5,8 @@ import estdados
 import modelo as mod
 import numpy as np
 
+from datetime import datetime
+
 # G1 = ["2","4","6"]
 # L1 = ["A","G"]
 # L2 = ["A","C"]
@@ -13,10 +15,10 @@ import numpy as np
 # N3 = ["1","2","3","4","5"]
 # N4 = ["1","2"]
 
-G1 = ["2"]      # padrao
-#G1 = ["4"]      #2496 itens
-# G1 = ["6"]      #365 itens demanda 5
-# G1 = ["8"]      #365 itens demanda 1
+# G1 = ["2"]      # padrao
+# G1 = ["4"]      #2496 itens
+# G1 = ["6"]      #95 itens - 68726 - CJ SD ESTRUTURA DO CHASSI RX-65
+G1 = ["8"]      #365cls itens demanda 1
 L1 = ["A"]
 
 L2 = ["A"]
@@ -62,8 +64,15 @@ for inst in comb:
 	mod.variables(model,d,v)
 	print("1 - declaração de variávei concluído. Função de custo em andamento")
 	mod.cost_function(model,d,v)
+	
+	now = datetime.now()
+	current_time = now.strftime("%H:%M:%S")
 	print("2 - funcao custo concluído. Restricao em andamento")
 	mod.constraints(model, d, v)
+	
+	now = datetime.now()
+	current_time = now.strftime("%H:%M:%S")
+	print("Current Time =", current_time)
 	print("3 - restricao concluido. Otimização em andamento")
 	model.setParam('TimeLimit', time_limit)
 	

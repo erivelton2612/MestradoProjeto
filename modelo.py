@@ -3,14 +3,6 @@ import estdados
 import progressbar 
 from time import sleep
 
-def busca(estrutura,obj1, obj2,retIdx):
-	value = 0
-	for x in range(len(estrutura)):
-		if(estrutura[x][0] == obj1+1 and estrutura[x][1] == obj2+1):
-			value = estrutura[x][retIdx]
-			break
-	return value
-
 #-------------Criação de Variáveis
 
 def variables(model,d,v):
@@ -27,11 +19,10 @@ def variables(model,d,v):
 def cost_function(model,d,v):
 	
 	bar = progressbar.ProgressBar(maxval=d.J, \
-    widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+    widgets=[progressbar.Bar('=', '\n[', ']'), ' ', progressbar.Percentage()])
 	bar.start()
 	
-	inventory = sum(v.I_jt[j,t+1] *d.h_j[j] 
-                 for j in range(d.J) for t in range(d.T))
+	inventory = sum(v.I_jt[j,t+1] *d.h_j[j] for j in range(d.J) for t in range(d.T))
 	
 	setup=0
 	for j in range(d.J): 
@@ -61,7 +52,7 @@ def constraints(model, d, v):
 
 	#Fluxo de estoque produto
 	bar = progressbar.ProgressBar(maxval=d.J, \
-    widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+    widgets=[progressbar.Bar('=', '\n[', ']'), ' ', progressbar.Percentage()])
 	bar.start()
 	print("tamanho do d.S_j:"+str(len(d.S_j)))
 	print("tamanho do d.d_jt:" + str(len(d.d_jt)))
@@ -70,15 +61,15 @@ def constraints(model, d, v):
 		bar.update(j+1)
 		sleep(0.1)
 		for t in range(d.T):
-			rhs = v.I_jt[j,t+1]
-			rhs += d.d_jt[j,t]
 			lhs = v.I_jt[j,t]
-			for k in range(d.M):
+			rhs = d.d_jt[j,t] + v.I_jt[j,t+1]
+			#Melhoria aplicada selecionando apenas as colunas que possuem valor no item j
+			for k in d.b_jk[j,:].nonzero()[1]:
 				lhs += v.Q_jtk[j,t,k] 
-				#possivel melhoria, selecionar apenas os sucessores para fazer o proximo for
-				for i in range(d.J):
-					rhs += d.S_j[j,i] * v.Q_jtk[i,t,k]
-					
+			#Melhoria aplicada selecionando apenas as colunas que possuem valor no item j
+				for i in d.S_j[j,:].nonzero()[1]:
+					rhs += d.S_j[j,i] * v.Q_jtk[i,t,k] 
+				
 			model.addConstr(lhs == rhs)
 	bar.finish()
 			
@@ -86,14 +77,14 @@ def constraints(model, d, v):
 	#Capacidade
 	print("Capacidade em andamento")
 	bar = progressbar.ProgressBar(maxval=d.M, \
-    widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+    widgets=[progressbar.Bar('=', '\n[', ']'), ' ', progressbar.Percentage()])
 	bar.start()
 	for k in range(d.M):
 		bar.update(k+1)
 		sleep(0.1)
 		for t in range(d.T):
 			usage = 0
-			for j in range(d.J):
+			for j in d.b_jk[:,k].nonzero()[0]:
 				usage += d.b_jk[j,k] * v.Q_jtk[j,t,k] + d.s_jk[j,k]
 			model.addConstr(usage <= d.cap_kt[k][t])
 	bar.finish()
@@ -101,13 +92,12 @@ def constraints(model, d, v):
 	#Setup
 	print("Setup em andamento")
 	bar = progressbar.ProgressBar(maxval=d.J, \
-    widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+    widgets=[progressbar.Bar('=', '\n[', ']'), ' ', progressbar.Percentage()])
 	bar.start()
 	
 	for j in range(d.J):
 		bar.update(k+1)
 		sleep(0.1)
-		print(".", end =" "),
 		for t in range(d.T):
 			for k in range(d.M):
 				#model.addConstr(v.Q_jtk[j,t,k] <= d.beta[j][t]*v.Y_jtk[j,t,k])

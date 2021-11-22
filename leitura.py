@@ -18,12 +18,12 @@ def leitura(argv, d):
 	#4  items
 	#5  number of ressource that produces the item
 	#6  production time per unit
-	d.b_jk= dok_matrix((d.J,d.M),dtype=np.int32)
+	d.b_jk= dok_matrix((d.J,d.M),dtype=np.float32)
 	
 	#7	tempo de setup do produto na maquina
-	d.s_jk = dok_matrix((d.J,d.M),dtype=np.int32)
+	d.s_jk = dok_matrix((d.J,d.M),dtype=np.float32)
 	#7.1Custo de setup do produto por maquina
-	d.cs_jk = dok_matrix((d.J,d.M),dtype=np.int32)
+	d.cs_jk = dok_matrix((d.J,d.M),dtype=np.float32)
 	
 	for i in range(lines):
 		e = arqv.readline().split()
@@ -36,14 +36,14 @@ def leitura(argv, d):
 	#10 units of component needed to produce one unit of parent
 	#11 lead time
 	
+	
 	d.S_j = dok_matrix((d.J,d.J),dtype=np.float64)
 	
 	lines = int(arqv.readline())
 	
 	for i in range(lines):
 		e = arqv.readline().split()
-		d.S_j[int(e[0]) -1 , int(e[1])-1] = float(e[2]) 
-		
+		d.S_j[int(e[1]) -1 , int(e[0])-1] = float(e[2]) 
 		
 
 	arqv.close()
@@ -73,7 +73,7 @@ def leitura(argv, d):
 		d.cap_kt.append([])
 		e = arqv.readline().split()
 		for t in range(d.T):
- 			d.cap_kt[i].append(int(e[t+1]))
+			d.cap_kt[i].append(int(e[t+1]))
 
 	arqv.close()
 
