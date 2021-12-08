@@ -1,5 +1,9 @@
 
-	
+			
+		drop table ItemMaquinasEstrutura 
+		drop table nroItens
+		drop table nroRecursos
+		drop table OPEstruturaId
 			--estrutura de produtos
 
 			WITH MENULEVEL(CODIGO, NIVEL, PAI, QTD,QTDpadrao,Tipo)
@@ -12,13 +16,13 @@
 					4 as Tipo
 				FROM sbo_casale_prd.dbo.OITM T0
 				--WHERE T0.[ITEMCODE]='[%0]'
-				WHERE T0.[ITEMCODE] in (select t0.ItemCode
-									from sbo_casale_prd.dbo.OWOR t0 inner join sbo_casale_prd.dbo.oitm t1 on t0.itemcode = t1.itemcode
-									where t0.DueDate between '20210601' and '20210630'
-										and t0.OriginNum < 9000000
-										and t1.mattype = 4
-										)
-				--where T0.[ITEMCODE] = '71827'
+				--WHERE T0.[ITEMCODE] in (select t0.ItemCode
+				--					from sbo_casale_prd.dbo.OWOR t0 inner join sbo_casale_prd.dbo.oitm t1 on t0.itemcode = t1.itemcode
+				--					where t0.DueDate between '20210601' and '20210630'
+				--						and t0.OriginNum < 9000000
+				--						and t1.mattype = 4
+				--						)
+				where T0.[ITEMCODE] = '68726'
 
 				UNION ALL
 
@@ -31,9 +35,13 @@
 			)
 
 --use [DataWarehouse]
-			select distinct  *
-			into ItemMaquinasEstrutura 
-			from MENULEVEL t0
+
+
+		select distinct  *
+		into ItemMaquinasEstrutura 
+		from MENULEVEL t0
+
+
 
 
 

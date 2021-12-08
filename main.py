@@ -15,10 +15,10 @@ from datetime import datetime
 # N3 = ["1","2","3","4","5"]
 # N4 = ["1","2"]
 
-# G1 = ["2"]      # padrao
+G1 = ["2"]      # padrao
 # G1 = ["4"]      #2496 itens
 # G1 = ["6"]      #95 itens - 68726 - CJ SD ESTRUTURA DO CHASSI RX-65
-G1 = ["8"]      #365cls itens demanda 1
+# G1 = ["8"]      #365cls itens demanda 1
 L1 = ["A"]
 
 L2 = ["A"]
@@ -43,6 +43,8 @@ for inst in comb:
 	v = estdados.Var()
 	rd.leitura(cmd, d)
 	
+	
+	
 # 	print("d.S_j")
 # 	print(*d.S_j, sep = "\n")
 # 	print(a, sep = "\n")
@@ -62,18 +64,18 @@ for inst in comb:
 
 	model = grb.Model("lot sizing")
 	mod.variables(model,d,v)
-	print("1 - declaração de variávei concluído. Função de custo em andamento")
+	print("\n1 - declaração de variávei concluído. Função de custo em andamento")
 	mod.cost_function(model,d,v)
 	
 	now = datetime.now()
 	current_time = now.strftime("%H:%M:%S")
-	print("2 - funcao custo concluído. Restricao em andamento")
+	print("\n2 - funcao custo concluído. Restricao em andamento")
 	mod.constraints(model, d, v)
 	
 	now = datetime.now()
 	current_time = now.strftime("%H:%M:%S")
-	print("Current Time =", current_time)
-	print("3 - restricao concluido. Otimização em andamento")
+	print("\nCurrent Time =", current_time)
+	print("\n3 - restricao concluido. Otimização em andamento")
 	model.setParam('TimeLimit', time_limit)
 	
 	print("4")

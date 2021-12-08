@@ -21,9 +21,15 @@ def cost_function(model,d,v):
 	bar = progressbar.ProgressBar(maxval=d.J, \
     widgets=[progressbar.Bar('=', '\n[', ']'), ' ', progressbar.Percentage()])
 	bar.start()
-	
-	inventory = sum(v.I_jt[j,t+1] *d.h_j[j] for j in range(d.J) for t in range(d.T))
-	
+	inventory = 0
+# 	for j in range(d.J):
+# 		inventory += v.I_jt[j,0] * 10000000000
+# 		for t in range(d.T):
+#  			inventory += v.I_jt[j,t+1] #* d.h_j[j] 
+
+	inventory = sum(v.I_jt[j,t+1] * d.h_j[j]
+ 				 for j in range(d.J) for t in range(d.T))
+ 	
 	setup=0
 	for j in range(d.J): 
 		bar.update(j+1)
@@ -48,26 +54,31 @@ def constraints(model, d, v):
 
 	#Estoque inicial produto
 	for j in range(d.J):
-		model.addConstr(v.I_jt[j,0] == d.stk_j[j])	
+		model.addConstr(v.I_jt[j,0] == d.stk_j[j]) #iniciar como varial
+# 		model.addConstr(v.I_jt[j,0] >= d.stk_j[j]) #iniciar como varial
 
 	#Fluxo de estoque produto
 	bar = progressbar.ProgressBar(maxval=d.J, \
     widgets=[progressbar.Bar('=', '\n[', ']'), ' ', progressbar.Percentage()])
 	bar.start()
-	print("tamanho do d.S_j:"+str(len(d.S_j)))
-	print("tamanho do d.d_jt:" + str(len(d.d_jt)))
 	print("Fluxo de estoque em andamento")
+	
 	for j in range(d.J):
 		bar.update(j+1)
 		sleep(0.1)
 		for t in range(d.T):
 			lhs = v.I_jt[j,t]
-			rhs = d.d_jt[j,t] + v.I_jt[j,t+1]
 			#Melhoria aplicada selecionando apenas as colunas que possuem valor no item j
 			for k in d.b_jk[j,:].nonzero()[1]:
+# 			for k in range(d.M):
 				lhs += v.Q_jtk[j,t,k] 
+				
+			rhs = d.d_jt[j,t] + v.I_jt[j,t+1]
 			#Melhoria aplicada selecionando apenas as colunas que possuem valor no item j
-				for i in d.S_j[j,:].nonzero()[1]:
+			for i in d.S_j[j,:].nonzero()[1]:
+# 			for i in range(d.J):
+				for k in d.b_jk[i,:].nonzero()[1]:	
+# 				for k in range(d.M):
 					rhs += d.S_j[j,i] * v.Q_jtk[i,t,k] 
 				
 			model.addConstr(lhs == rhs)
@@ -85,7 +96,7 @@ def constraints(model, d, v):
 		for t in range(d.T):
 			usage = 0
 			for j in d.b_jk[:,k].nonzero()[0]:
-				usage += d.b_jk[j,k] * v.Q_jtk[j,t,k] + d.s_jk[j,k]
+				usage += d.b_jk[j,k] * v.Q_jtk[j,t,k] + d.s_jk[j,k]*v.Y_jtk[j,t,k]
 			model.addConstr(usage <= d.cap_kt[k][t])
 	bar.finish()
 	
@@ -153,9 +164,16 @@ def printsolution(argv,model,d,v):
 	for j in range(d.J):
 		for t in range(d.T):
 			for k in range(d.M):
-				a = sum(d.S_j[j,i]*v.Q_jtk[i,t,k].X  * v.Q_jt[i,t].X for i in range(d.J) if type(d.S_j[j,i]) == float)
-				solt.write(str(j+1)+"\t"+str(t+1)+"\t"+str(k+1)+"\t"+str(round(v.Q_jtk[j,t,k].X))+"\t"+
-					   str(round(v.I_jt[j,t+1].X))+"\t"+str(round(d.d_jt[j,t]))+"\t"+str(round(a))+"\n")
+				a += sum(d.S_j[j,i]*v.Q_jtk[i,t,k].X  for i in range(d.J) #if type(d.S_j[j,i]) == float
+			 )
+				solt.write(
+						str(j+1)+"\t"+
+						str(t+1)+"\t"+
+						str(k+1)+"\t"+
+						str(round(v.Q_jtk[j,t,k].X))+"\t"+
+						str(round(v.I_jt[j,t+1].X))+"\t"+
+						str(round(d.d_jt[j,t]))+"\t"+
+						str(round(a))+"\n")
 		solt.write("\n")
 
 	solt.close()
