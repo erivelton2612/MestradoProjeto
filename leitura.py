@@ -43,7 +43,7 @@ def leitura(argv, d):
 	
 	for i in range(lines):
 		e = arqv.readline().split()
-		d.S_j[int(e[1]) -1 , int(e[0])-1] = float(e[2]) 
+		d.S_j[int(e[0]) -1 , int(e[1])-1] = float(e[2]) 
 		
 
 	arqv.close()

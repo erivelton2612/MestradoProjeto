@@ -21,14 +21,14 @@ def cost_function(model,d,v):
 	bar = progressbar.ProgressBar(maxval=d.J, \
     widgets=[progressbar.Bar('=', '\n[', ']'), ' ', progressbar.Percentage()])
 	bar.start()
-	inventory = 0
+# 	inventory = 0
 # 	for j in range(d.J):
-# 		inventory += v.I_jt[j,0] * 10000000000
+# 		inventory += v.I_jt[j,1] * 100000000
 # 		for t in range(d.T):
-#  			inventory += v.I_jt[j,t+1] #* d.h_j[j] 
+#  			inventory += v.I_jt[j,t+1] *10000#* d.h_j[j] 
 
 	inventory = sum(v.I_jt[j,t+1] * d.h_j[j]
- 				 for j in range(d.J) for t in range(d.T))
+ 				 for j in range(d.J) for t in range(d.T) if type(d.h_j[j]) == float)
  	
 	setup=0
 	for j in range(d.J): 
@@ -70,17 +70,19 @@ def constraints(model, d, v):
 			lhs = v.I_jt[j,t]
 			#Melhoria aplicada selecionando apenas as colunas que possuem valor no item j
 			for k in d.b_jk[j,:].nonzero()[1]:
-# 			for k in range(d.M):
 				lhs += v.Q_jtk[j,t,k] 
-				
-			rhs = d.d_jt[j,t] + v.I_jt[j,t+1]
+			
+			if type(d.d_jt[j,t]) == float:
+				rhs = d.d_jt[j,t] + v.I_jt[j,t+1]
+			else:
+				rhs = 0
 			#Melhoria aplicada selecionando apenas as colunas que possuem valor no item j
-			for i in d.S_j[j,:].nonzero()[1]:
-# 			for i in range(d.J):
-				for k in d.b_jk[i,:].nonzero()[1]:	
-# 				for k in range(d.M):
-					rhs += d.S_j[j,i] * v.Q_jtk[i,t,k] 
-				
+			conj = d.S_j[j,:].nonzero()[1]
+			for i in conj:
+				conj2 = d.b_jk[i,:].nonzero()[1]
+				for k in conj2:
+					rhs += d.S_j[j,i] * v.Q_jtk[i,t,k]
+						
 			model.addConstr(lhs == rhs)
 	bar.finish()
 			
@@ -145,7 +147,10 @@ def printsolution(argv,model,d,v):
 		for t in range(d.T):
 			a = 0
 			for j in range(d.J):
-				a += d.b_jk[j,k] * v.Q_jtk[j,t,k].X + d.s_jk[j,k]*v.Y_jtk[j,t,k].X
+				if type(d.b_jk[j,k]) == float:
+					a += d.b_jk[j,k] * v.Q_jtk[j,t,k].X 
+				if type(d.s_jk[j,k]) == float:
+					a += d.s_jk[j,k]*v.Y_jtk[j,t,k].X
 						
 			a = a/d.cap_kt[k][t]
 			solt.write(str(round(100*a,2))+"\t")
@@ -164,7 +169,7 @@ def printsolution(argv,model,d,v):
 	for j in range(d.J):
 		for t in range(d.T):
 			for k in range(d.M):
-				a += sum(d.S_j[j,i]*v.Q_jtk[i,t,k].X  for i in range(d.J) #if type(d.S_j[j,i]) == float
+				a += sum(d.S_j[j,i]*v.Q_jtk[i,t,k].X  for i in range(d.J) if type(d.S_j[j,i]) == float
 			 )
 				solt.write(
 						str(j+1)+"\t"+
