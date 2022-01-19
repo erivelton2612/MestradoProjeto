@@ -4,9 +4,12 @@ import leitura as rd
 import estdados
 import modelo as mod
 import numpy as np
+import sys
 
 from datetime import datetime
 
+
+original_stdout = sys.stdout
 # G1 = ["2","4","6"]
 # L1 = ["A","G"]
 # L2 = ["A","C"]
@@ -16,8 +19,8 @@ from datetime import datetime
 # N4 = ["1","2"]
 
 # G1 = ["2"]      # padrao
-G1 = ["4"]      #teste 1 item
-# G1 = ["6"]      #95 itens - 68726 - CJ SD ESTRUTURA DO CHASSI RX-65
+# G1 = ["4"]      #teste 1 item
+G1 = ["6"]      #95 itens - 68726 - CJ SD ESTRUTURA DO CHASSI RX-65
 # G1 = ["8"]      #365cls itens demanda 1
 L1 = ["A"]
 
@@ -78,8 +81,19 @@ for inst in comb:
 	print("\n3 - restricao concluido. Otimização em andamento")
 	model.setParam('TimeLimit', time_limit)
 	
+# 	
+# 	# Save model
+# 	model.write('facilityPY.lp')
+	
+	
 	print("4")
 	model.optimize()
+	
+	
+	with open('filename.txt', 'w') as f:
+		sys.stdout = f # Change the standard output to the file we created.
+		print (model.display())
+		sys.stdout = original_stdout 
 
 # 	print(*v.b_jk, sep = ", ")
 

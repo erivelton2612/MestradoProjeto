@@ -21,11 +21,11 @@ def cost_function(model,d,v):
 	bar = progressbar.ProgressBar(maxval=d.J, \
     widgets=[progressbar.Bar('=', '\n[', ']'), ' ', progressbar.Percentage()])
 	bar.start()
-# 	inventory = 0
+	inventory = 0
 # 	for j in range(d.J):
-# 		inventory += v.I_jt[j,1] * 100000000
+# 		inventory += v.I_jt[j,0] * 100000000
 # 		for t in range(d.T):
-#  			inventory += v.I_jt[j,t+1] *10000#* d.h_j[j] 
+#  			inventory += v.I_jt[j,t+1] * d.h_j[j] 
 
 	inventory = sum(v.I_jt[j,t+1] * d.h_j[j]
  				 for j in range(d.J) for t in range(d.T) if type(d.h_j[j]) == float)
@@ -36,7 +36,7 @@ def cost_function(model,d,v):
 		sleep(0.1)
 		for t in range(d.T): 
 			for k in range(d.M):
-				setup += v.Y_jtk[j,t,k] * d.cs_jk [j,k] *100
+				setup += v.Y_jtk[j,t,k] * 1 #d.cs_jk [j,k] 
 				
 	bar.finish()
 	
@@ -53,9 +53,12 @@ def constraints(model, d, v):
 		#d.T = ESTOQUE NO FINAL DE TUDO QUE VAI SER ZERO
 
 	#Estoque inicial produto
-	for j in range(d.J):
-		model.addConstr(v.I_jt[j,0] == d.stk_j[j]) #iniciar como varial
+# 	for j in range(d.J):
+# 		model.addConstr(v.I_jt[j,0] == d.stk_j[j]) #iniciar como varial
 # 		model.addConstr(v.I_jt[j,0] >= d.stk_j[j]) #iniciar como varial
+	for j in range(d.J):
+		model.addConstr(v.I_jt[j,0] == d.stk_j[j])
+	
 
 	#Fluxo de estoque produto
 	bar = progressbar.ProgressBar(maxval=d.J, \
@@ -72,10 +75,10 @@ def constraints(model, d, v):
 			for k in d.b_jk[j,:].nonzero()[1]:
 				lhs += v.Q_jtk[j,t,k] 
 			
-			if type(d.d_jt[j,t]) == float:
+			if d.d_jt[j,t] is not None:
 				rhs = d.d_jt[j,t] + v.I_jt[j,t+1]
 			else:
-				rhs = 0
+				rhs = 0 + v.I_jt[j,t+1]
 			#Melhoria aplicada selecionando apenas as colunas que possuem valor no item j
 			conj = d.S_j[j,:].nonzero()[1]
 			for i in conj:
@@ -99,6 +102,7 @@ def constraints(model, d, v):
 			usage = 0
 			for j in d.b_jk[:,k].nonzero()[0]:
 				usage += d.b_jk[j,k] * v.Q_jtk[j,t,k] + d.s_jk[j,k]*v.Y_jtk[j,t,k]
+					
 			model.addConstr(usage <= d.cap_kt[k][t])
 	bar.finish()
 	
@@ -180,6 +184,8 @@ def printsolution(argv,model,d,v):
 						str(round(d.d_jt[j,t]))+"\t"+
 						str(round(a))+"\n")
 		solt.write("\n")
+		
+		
 
 	solt.close()
 
