@@ -36,7 +36,7 @@ def cost_function(model,d,v):
 		sleep(0.1)
 		for t in range(d.T): 
 			for k in range(d.M):
-				setup += v.Y_jtk[j,t,k] * 1 #d.cs_jk [j,k] 
+				setup += v.Y_jtk[j,t,k] * 1000 #d.cs_jk [j,k] 
 				
 	bar.finish()
 	
@@ -53,12 +53,10 @@ def constraints(model, d, v):
 		#d.T = ESTOQUE NO FINAL DE TUDO QUE VAI SER ZERO
 
 	#Estoque inicial produto
-# 	for j in range(d.J):
-# 		model.addConstr(v.I_jt[j,0] == d.stk_j[j]) #iniciar como varial
-# 		model.addConstr(v.I_jt[j,0] >= d.stk_j[j]) #iniciar como varial
 	for j in range(d.J):
+# 		model.addConstr(v.I_jt[j,0] == d.stk_j[j]) #iniciar como varial
+ 		#model.addConstr(v.I_jt[j,0] >= d.stk_j[j]) #iniciar como varial
 		model.addConstr(v.I_jt[j,0] == d.stk_j[j])
-	
 
 	#Fluxo de estoque produto
 	bar = progressbar.ProgressBar(maxval=d.J, \
@@ -103,6 +101,7 @@ def constraints(model, d, v):
 			for j in d.b_jk[:,k].nonzero()[0]:
 				usage += d.b_jk[j,k] * v.Q_jtk[j,t,k] + d.s_jk[j,k]*v.Y_jtk[j,t,k]
 					
+			#model.addConstr(usage <= d.cap_kt[k][t])
 			model.addConstr(usage <= d.cap_kt[k][t])
 	bar.finish()
 	
@@ -169,22 +168,41 @@ def printsolution(argv,model,d,v):
 	solt.write("\n\n")
 	
 
-	solt.write("Item\tT\tMaq\tProd\tInv\tDem E\tDem I\n")
+	#solt.write("Item\tT\tMaq\tProd\tInv\tDem E\tDem I\n")
+	#for t in range(d.T):
+	#	for j in range(d.J):
+	#		a=0
+	#		for k in range(d.M):
+	#			a += sum(d.S_j[j,i]*v.Q_jtk[i,t,k].X  for i in range(d.J) if type(d.S_j[j,i]) == float)
+	#			solt.write(
+	#					str(t+1)+"\t"+
+	#					str(j+1)+"\t"+
+	#					str(k+1)+"\t"+
+	#					str(round(v.Q_jtk[j,t,k].X))+#"\t"+
+	#					#str(round(v.I_jt[j,t+1].X))+"\t"+
+	#					#str(round(d.d_jt[j,t]))+"\t"+
+	#					#str(round(a))+
+	#					"\n"
+	#					)
+	#	solt.write("\n")
+		
+
+
+
+	solt.write("Item\tT\tProd\tInv\tDem E\tDem I\n")
 	for j in range(d.J):
 		for t in range(d.T):
-			for k in range(d.M):
-				a += sum(d.S_j[j,i]*v.Q_jtk[i,t,k].X  for i in range(d.J) if type(d.S_j[j,i]) == float
-			 )
-				solt.write(
-						str(j+1)+"\t"+
-						str(t+1)+"\t"+
-						str(k+1)+"\t"+
-						str(round(v.Q_jtk[j,t,k].X))+"\t"+
-						str(round(v.I_jt[j,t+1].X))+"\t"+
-						str(round(d.d_jt[j,t]))+"\t"+
-						str(round(a))+"\n")
+			a = sum(d.S_j[j,i]*v.Q_jtk[i,t,k].X  for i in range(d.J) for k in range(d.M))
+			b = sum(v.Q_jtk[j,t,k].X  for k in range(d.M))
+			solt.write(
+				str(j+1)+"\t"+
+				str(t+1)+"\t"+
+				#str(k+1)+"\t"+
+				str(round(b))+"\t"+
+				str(round(v.I_jt[j,t+1].X))+"\t"+
+				str(round(d.d_jt[j,t]))+"\t"+
+				str(round(a))+"\n")
 		solt.write("\n")
-		
 		
 
 	solt.close()

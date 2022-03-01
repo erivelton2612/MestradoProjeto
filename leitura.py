@@ -74,10 +74,10 @@ def leitura(argv, d):
 	d.cap_kt = [[0 for t in range(d.T)] for k in range(d.M)] 
 	for k in range(d.M):
 		for t in range(d.T):
-			if(k == d.M):
-				d.cap_kt[k][t] = 999999
+			if(k == d.M - 1):
+				d.cap_kt[k][t] = 999999*60
 			else:
-				d.cap_kt[k][t] = 8
+				d.cap_kt[k][t] = 8*60
 
 	
 # 	for i in range(d.M):
