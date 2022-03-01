@@ -41,7 +41,7 @@ for inst in comb:
 	instance = inst[0]+inst[1]+inst[2]+inst[3]+inst[4]+inst[5]+inst[6]
 	cmd = [instance,dirc,dat,dem,sco,setup,cap]
 
-	time_limit = 3600
+	time_limit = 60
 	d = estdados.Par()
 	v = estdados.Var()
 	rd.leitura(cmd, d)
