@@ -75,9 +75,9 @@ def leitura(argv, d):
 	for k in range(d.M):
 		for t in range(d.T):
 			if(k == d.M - 1):
-				d.cap_kt[k][t] = 999999*60
+				d.cap_kt[k][t] = 12
 			else:
-				d.cap_kt[k][t] = 8*60
+				d.cap_kt[k][t] = 12
 
 	
 # 	for i in range(d.M):

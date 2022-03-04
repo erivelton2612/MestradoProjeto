@@ -28,7 +28,7 @@ def cost_function(model,d,v):
 #  			inventory += v.I_jt[j,t+1] * d.h_j[j] 
 
 	inventory = sum(v.I_jt[j,t+1] * d.h_j[j]
- 				 for j in range(d.J) for t in range(d.T) if type(d.h_j[j]) == float)
+ 				 for j in range(d.J) for t in range(d.T))
  	
 	setup=0
 	for j in range(d.J): 
@@ -36,7 +36,7 @@ def cost_function(model,d,v):
 		sleep(0.1)
 		for t in range(d.T): 
 			for k in range(d.M):
-				setup += v.Y_jtk[j,t,k] * 1000 #d.cs_jk [j,k] 
+				setup += v.Y_jtk[j,t,k] *  d.cs_jk [j,k] 
 				
 	bar.finish()
 	
@@ -133,9 +133,9 @@ def printsolution(argv,model,d,v):
 	solt.write(str(round(model.Runtime,2))+"\t"+str(model.Status)+"\n")
 
 
-	inv_prod = sum(v.I_jt[j,t+1].X#*d.h_j[j] 
+	inv_prod = sum(v.I_jt[j,t+1].X*d.h_j[j] 
 				for j in range(d.J) for t in range(d.T))
-	setup = sum(v.Y_jtk[j,t,k].X#*d.cs_jk[j,k]
+	setup = sum(v.Y_jtk[j,t,k].X*d.cs_jk[j,k]
 			 *100 for j in range(d.J) for t in range(d.T) for k in range(d.M))
 
 	solt.write("Custos\nEstoque\tSetup\n")
@@ -150,9 +150,9 @@ def printsolution(argv,model,d,v):
 		for t in range(d.T):
 			a = 0
 			for j in range(d.J):
-				if type(d.b_jk[j,k]) == float:
+				#if type(d.b_jk[j,k]) == float:
 					a += d.b_jk[j,k] * v.Q_jtk[j,t,k].X 
-				if type(d.s_jk[j,k]) == float:
+				#if type(d.s_jk[j,k]) == float:
 					a += d.s_jk[j,k]*v.Y_jtk[j,t,k].X
 						
 			a = a/d.cap_kt[k][t]
@@ -162,7 +162,7 @@ def printsolution(argv,model,d,v):
 
 	solt.write("Custos Estoque Por Periodo\n")
 	for t in range(d.T):
-		a = sum(v.I_jt[j,t+1].X#*d.h_j[j] 
+		a = sum(v.I_jt[j,t+1].X*d.h_j[j] 
 		  for j in range(d.J))
 		solt.write(str(round(a))+"\t")
 	solt.write("\n\n")
