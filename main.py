@@ -19,8 +19,8 @@ original_stdout = sys.stdout
 # N4 = ["1","2"]
 
 # G1 = ["2"]      # padrao
-G1 = ["4"]      #teste 1 item
-#G1 = ["6"]      #95 itens - 68726 - CJ SD ESTRUTURA DO CHASSI RX-65
+#G1 = ["4"]      #teste 1 item
+G1 = ["6"]      #95 itens - 68726 - CJ SD ESTRUTURA DO CHASSI RX-65
 #G1 = ["8"]      #365cls itens demanda 1
 L1 = ["A"]
 

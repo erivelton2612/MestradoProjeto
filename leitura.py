@@ -69,16 +69,22 @@ def leitura(argv, d):
 
 # 	#CAP------------------------------------------------------------
 	arqv = open (str(argv[1]+'cap/'+argv[6]))
-	e = arqv.readline().split()
+	#e = arqv.readline().split()
 	
 	d.cap_kt = [[0 for t in range(d.T)] for k in range(d.M)] 
+	#for k in range(d.M):
+	#	for t in range(d.T):
+	#		if(k == d.M - 1):
+	#			d.cap_kt[k][t] = 12
+	#		else:
+	#			d.cap_kt[k][t] = 12
+
 	for k in range(d.M):
 		for t in range(d.T):
-			if(k == d.M - 1):
-				d.cap_kt[k][t] = 12
-			else:
-				d.cap_kt[k][t] = 12
+			e = arqv.readline().split()
+			d.cap_kt[k][t] = int(e[2])
 
+	arqv.close()
 	
 # 	for i in range(d.M):
 # 		d.cap_kt.append([])
